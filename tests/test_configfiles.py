@@ -10,6 +10,7 @@ def no_appdirs(monkeypatch):
     monkeypatch.setitem(sys.modules, "appdirs", None)
 
 
+@pytest.mark.skipif(sys.platform != 'linux', reason="Test only works on Linux")
 def test_xdg_configfiles():
     paths = config_files()
     assert paths == [
@@ -24,8 +25,9 @@ def test_environ_config_paths():
 
 
 def test_environ_config_file():
-    paths = config_files({'CRESTIC_CONFIG_FILE': '/fileA/crestic.cfg'})
-    assert paths == ['/fileA/crestic.cfg']
+    with pytest.deprecated_call():
+        paths = config_files({'CRESTIC_CONFIG_FILE': '/fileA/crestic.cfg'})
+        assert paths == ['/fileA/crestic.cfg']
 
 
 def test_default_configfiles(no_appdirs):

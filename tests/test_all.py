@@ -13,6 +13,7 @@ import builtins
 def clean_env(monkeypatch):
     try:
         monkeypatch.delitem(os.environ, 'CRESTIC_CONFIG_FILE')
+        monkeypatch.delitem(os.environ, 'CRESTIC_CONFIG_PATHS')
     except KeyError:
         pass
     try:
@@ -33,13 +34,11 @@ def mock_print(mocker):
 
 @pytest.fixture(params=[True, False])
 def conffile(monkeypatch, clean_env, request):
-    val = 'tests/config.ini'
-
     if request.param:
-        monkeypatch.setitem(os.environ, 'CRESTIC_CONFIG_FILE', val)
+        monkeypatch.setitem(os.environ, 'CRESTIC_CONFIG_PATHS', 'tests/')
         return None
     else:
-        return val
+        return 'tests/crestic.cfg'
 
 
 @pytest.fixture(params=[True, False])
@@ -76,6 +75,7 @@ def test_plain_backup(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'bla', '/home/user'],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -85,6 +85,7 @@ def test_plain_forget(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'forget', '--exclude-file', 'bla'],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -94,6 +95,7 @@ def test_boolean(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'bla', '--quiet', '/home/user'],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -103,6 +105,7 @@ def test_singlechar(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'bla', '-r', 'repo-url', '/home/user'],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -112,6 +115,7 @@ def test_multivals(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'bla', '--exclude', 'config.py', '--exclude', 'passwords.txt', '/home/user'],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -121,6 +125,7 @@ def test_overloaded(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'overloaded', '/home/user'],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -130,6 +135,7 @@ def test_overloaded2(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'overloaded2', '/home/user'],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -139,6 +145,7 @@ def test_overloadedargs(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'foo', '/home/user'],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -148,6 +155,7 @@ def test_multipleargs(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'foo', '--exclude-file', 'bar', '/home/user'],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -157,6 +165,7 @@ def test_extraargs(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'bla', '--quiet', '/home/user'],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -173,6 +182,7 @@ def test_environ(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'bla', '/home/user'],
         env=environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -201,6 +211,7 @@ def test_expanded_tilde(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'bla', os.path.expanduser('~')],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -211,6 +222,7 @@ def test_expanded_variable(conffile, environ):
     subprocess.call.assert_called_once_with(
         ['restic', 'backup', '--exclude-file', 'bla', os.path.expandvars('$HOME')],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
@@ -224,6 +236,7 @@ def test_intermixed(conffile, environ, mock_parse_intermixed_args):
     subprocess.call.assert_called_once_with(
         ['restic', 'restore', '--exclude-file', 'bla', '--include', 'path space', '--target', '.', 'asd'],
         env=os.environ,
+        cwd=os.getcwd(),
         shell=False,
     )
 
