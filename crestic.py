@@ -167,6 +167,13 @@ def main(argv, environ=None, conffile=None, dryrun=None, executable=None):
     except KeyError:
         restic_arguments = []
 
+    # Extract cwd from options dict
+    try:
+        cwd = restic_options['_cwd'][0]
+        del restic_options['_cwd']
+    except KeyError:
+        cwd = os.getcwd()
+
     # Override config options with options from CLI
     python_args_dict = dict(vars(python_args))
     del python_args_dict['preset']
@@ -199,11 +206,12 @@ def main(argv, environ=None, conffile=None, dryrun=None, executable=None):
         print("Config sections used:", ", ".join(sections_read))
         print("        Env sections:", ", ".join(envsections))
         print("   Env sections used:", ", ".join(envsections_read))
+        print("   Working directory:", cwd)
         print("    Expanded command:", " ".join(argstring))
         return 0
     else:
         try:
-            return subprocess.call(argstring, env=restic_environ, shell=False)
+            return subprocess.call(argstring, env=restic_environ, cwd=cwd, shell=False)
         except KeyboardInterrupt:
             return 130
 
