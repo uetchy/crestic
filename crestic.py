@@ -37,7 +37,9 @@ def config_files(environ=None):
 
     # High priority: CRESTIC_CONFIG_FILE
     try:
-        return [environ['CRESTIC_CONFIG_FILE']]
+        retval = [environ['CRESTIC_CONFIG_FILE']]
+        warnings.warn("The use of the CRESTIC_CONFIG_FILE environment variable is deprecated, please use CRESTIC_CONFIG_PATHS instead.", DeprecationWarning)
+        return retval
     except KeyError:
         pass
 
