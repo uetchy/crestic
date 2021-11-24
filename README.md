@@ -33,7 +33,7 @@ password-file: ~/.config/restic/password
 
 [home.backup]
 exclude-file: ~/.config/restic/excludes
-arguments: ~
+_args: ~
 ```
 
 More advanced usage examples can be found further down this file.
@@ -58,7 +58,6 @@ chmod +x ~/.local/bin/crestic
 
 The following locations are used in descending order of importance:
 
- - environment variable `$CRESTIC_CONFIG_FILE`, a single filename
  - environment variable `$CRESTIC_CONFIG_PATHS`, a colon separated list of directories containing a file `crestic.cfg`
  - `~/.config/crestic/crestic.cfg`
  - `/etc/crestic.cfg`
@@ -163,10 +162,10 @@ repo: sftp:your_server:my_computer.restic
 exclude-file: ~/.config/restic/excludes
 
 [home.backup]
-arguments: ~
+_args: ~
 
 [work.backup]
-arguments: ~/work
+_args: ~/work
 ```
 
 Which can be used as `crestic home backup` and `crestic work backup`
@@ -190,10 +189,10 @@ To use these split presets, simply define location keys with an `@` suffix
 
 ```INI
 [home@.backup]
-arguments: ~
+_args: ~
 
 [work@.backup]
-arguments: ~/work
+_args: ~/work
 ```
 
 and repo keys with an `@` prefix
