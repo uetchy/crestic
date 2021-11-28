@@ -174,10 +174,10 @@ def main(argv, environ=None, conffile=None, dryrun=None, executable=None):
 
     # Extract cwd from options dict
     try:
-        cwd = restic_options['_cwd'][0]
-        del restic_options['_cwd']
+        cwd = restic_environ['PWD']
     except KeyError:
         cwd = os.getcwd()
+    cwd = os.path.abspath(cwd)
 
     # Override config options with options from CLI
     python_args_dict = dict(vars(python_args))
